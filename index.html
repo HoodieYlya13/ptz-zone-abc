@@ -2,41 +2,37 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Carte PTZ Grand Est | Zonage ABC en vigueur depuis le 26 juin 2026</title>
+  <title>Carte PTZ France | Zonage ABC en vigueur depuis le 26 juin 2026</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Carte interactive officielle du Zonage ABC (PTZ - Prêt à Taux Zéro) pour la Région Grand Est. Données officielles du Zonage ABC en vigueur depuis le 26 juin 2026. Vérifiez l'éligibilité et plafonds par commune.">
-  <meta name="keywords" content="Zonage ABC en vigueur depuis le 26 juin 2026, PTZ Grand Est, Carte PTZ Grand Est, Prêt à Taux Zéro 2026, communes éligibles PTZ, zone B1, zone B2, zone C, simulateur PTZ">
+  <meta name="description" content="Carte interactive du Zonage ABC (PTZ - Prêt à Taux Zéro) pour toutes les communes de France, région par région. Données officielles du Zonage ABC en vigueur depuis le 26 juin 2026. Vérifiez l'éligibilité au PTZ de chaque commune.">
+  <meta name="keywords" content="Zonage ABC en vigueur depuis le 26 juin 2026, PTZ France, Carte PTZ, Prêt à Taux Zéro 2026, communes éligibles PTZ, zone A bis, zone A, zone B1, zone B2, zone C">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#10b981">
 
-  <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
   <meta property="og:locale" content="fr_FR">
-  <meta property="og:title" content="Carte PTZ Grand Est | Zonage ABC en vigueur depuis le 26 juin 2026">
-  <meta property="og:description" content="Vérifiez l'éligibilité au PTZ (Prêt à Taux Zéro) pour les ~5 100 communes du Grand Est selon le Zonage ABC officiel en vigueur depuis le 26 juin 2026.">
+  <meta property="og:title" content="Carte PTZ France | Zonage ABC en vigueur depuis le 26 juin 2026">
+  <meta property="og:description" content="Vérifiez l'éligibilité au PTZ (Prêt à Taux Zéro) pour les ~34 900 communes de France selon le Zonage ABC officiel en vigueur depuis le 26 juin 2026.">
 
-  <!-- Twitter -->
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Carte PTZ Grand Est | Zonage ABC en vigueur depuis le 26 juin 2026">
-  <meta name="twitter:description" content="Carte interactive du Zonage ABC en vigueur depuis le 26 juin 2026 (Prêt à Taux Zéro) en région Grand Est.">
+  <meta name="twitter:title" content="Carte PTZ France | Zonage ABC en vigueur depuis le 26 juin 2026">
+  <meta name="twitter:description" content="Carte interactive du Zonage ABC en vigueur depuis le 26 juin 2026 (Prêt à Taux Zéro) pour toutes les régions de France.">
 
-  <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
 
-  <!-- Schema.org Structured Data for Google -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "Carte PTZ - Zonage ABC Région Grand Est",
+    "name": "Carte PTZ - Zonage ABC France",
     "headline": "Zonage ABC en vigueur depuis le 26 juin 2026",
-    "description": "Carte interactive officielle du Zonage ABC en vigueur depuis le 26 juin 2026 pour le Prêt à Taux Zéro (PTZ) dans les 10 départements de la Région Grand Est.",
+    "description": "Carte interactive du Zonage ABC en vigueur depuis le 26 juin 2026 pour le Prêt à Taux Zéro (PTZ) dans toutes les régions de France, y compris l'outre-mer.",
     "applicationCategory": "RealEstateApplication",
     "operatingSystem": "All",
     "inLanguage": "fr-FR",
     "spatialCoverage": {
-      "@type": "AdministrativeArea",
-      "name": "Grand Est",
+      "@type": "Country",
+      "name": "France",
       "addressCountry": "FR"
     }
   }
@@ -56,7 +52,8 @@
       border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       color: #1f2937;
-      max-width: 380px;
+      max-width: min(380px, calc(100vw - 110px));
+      box-sizing: border-box;
     }
     #app-header h1 {
       margin: 0;
@@ -71,12 +68,25 @@
       color: #4b5563;
       line-height: 1.4;
     }
+    #region-select {
+      margin-top: 10px;
+      width: 100%;
+      padding: 6px 8px;
+      font-size: 13px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      background: white;
+      color: #111827;
+    }
     #status {
       margin-top: 6px;
       font-size: 12px;
       font-weight: 600;
       color: #2563eb;
+      border-radius: 4px;
     }
+    #status:empty { display: none; }
+    #status.error { background: #fee2e2; color: #b91c1c; padding: 4px 6px; }
     .legend {
       background: white;
       padding: 12px 16px;
@@ -93,13 +103,26 @@
       margin-top: 4px;
       border-radius: 2px;
     }
+    .region-label {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      font-size: 12px;
+      font-weight: 600;
+      color: #1f2937;
+      text-shadow: 0 0 3px white, 0 0 3px white;
+    }
+    .region-label::before { display: none; }
   </style>
 </head>
 <body>
 
 <header id="app-header">
-  <h1>Carte PTZ – Région Grand Est</h1>
+  <h1>Carte PTZ – France</h1>
   <p class="subtitle">Zonage ABC en vigueur depuis le 26 juin 2026</p>
+  <select id="region-select" aria-label="Choisir une région" disabled>
+    <option value="">Choisir une région…</option>
+  </select>
   <div id="status">Chargement du fichier ptz-zoning.csv...</div>
 </header>
 <div id="map"></div>
@@ -108,32 +131,82 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
 <script>
-  // Vue cadrée sur le Grand Est
-  const map = L.map('map').setView([48.6, 6.2], 8);
+  const GEO_API = 'https://geo.api.gouv.fr';
+  const REGIONS_OUTLINE_URL = 'https://cdn.jsdelivr.net/gh/gregoiredavid/france-geojson@master/regions-version-simplifiee.geojson';
+  const FRANCE_VIEW = { center: [46.6, 2.4], zoom: 6 };
+
+  const map = L.map('map').setView(FRANCE_VIEW.center, FRANCE_VIEW.zoom);
+  map.createPane('regions').style.zIndex = 350;
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 18,
-    attribution: '© OpenStreetMap'
+    attribution: '© OpenStreetMap · © Etalab geo.api.gouv.fr'
   }).addTo(map);
 
+  const status = document.getElementById('status');
+  const regionSelect = document.getElementById('region-select');
+
   const dynamicZones = new Map();
+  const regionCache = new Map();
+  let departementsByRegion = new Map();
+  let regionNames = new Map();
+  let communesLayer = null;
+  let outlinesLayer = null;
+  let activeRegion = null;
+  let loadToken = 0;
 
-  const getStyle = (zone) => {
-    let color = '#10b981'; // Vert = C
-    if (zone === 'B1' || zone === 'A' || zone === 'ABIS') color = '#ef4444'; // Rouge = Inéligible
-    else if (zone === 'B2') color = '#f59e0b'; // Jaune = B2
+  const ZONE_COLORS = { ABIS: '#ef4444', A: '#ef4444', B1: '#ef4444', B2: '#f59e0b', C: '#10b981' };
+  const ZONE_LABELS = { ABIS: 'A bis', A: 'A', B1: 'B1', B2: 'B2', C: 'C' };
 
+  const zoneOf = (insee) => dynamicZones.get(insee) || 'C';
+
+  const getStyle = (zone) => ({
+    fillColor: ZONE_COLORS[zone] || ZONE_COLORS.C,
+    weight: 1,
+    opacity: 0.85,
+    color: '#4b5563',
+    fillOpacity: 0.55
+  });
+
+  const outlineStyle = (feature) => {
+    const isActive = feature.properties.code === activeRegion;
     return {
-      fillColor: color,
-      weight: 1,
-      opacity: 0.85,
-      color: '#4b5563',
-      fillOpacity: 0.55
+      color: '#1f2937',
+      weight: isActive ? 2.5 : 1.5,
+      fillColor: '#2563eb',
+      fillOpacity: isActive ? 0 : 0.08
     };
   };
 
-  // 1. Lecture du zonage officiel en mémoire
-  async function loadLocalCSV() {
+  const setStatus = (text, isError = false) => {
+    status.textContent = text;
+    status.classList.toggle('error', isError);
+  };
+
+  const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+
+  function describeZone(zone) {
+    if (zone === 'B2' || zone === 'C') {
+      return `<b style="color:${zone === 'B2' ? '#d97706' : '#059669'};">Éligible PTZ neuf et ancien avec travaux</b>`;
+    }
+    return '<b style="color:#dc2626;">Zone tendue : PTZ neuf uniquement</b><br>PTZ ancien avec travaux non disponible';
+  }
+
+  function popupContent(nom, insee, zone) {
+    return `
+      <div style="font-size:13px;">
+        <h3 style="margin:0 0 4px 0; font-size:15px;">${escapeHtml(nom)}</h3>
+        <div>Code INSEE : <b>${escapeHtml(insee)}</b></div>
+        <div>Zone PTZ : <b>${ZONE_LABELS[zone] || zone}</b></div>
+        <div style="margin-top:6px;">${describeZone(zone)}</div>
+        <div style="margin-top:6px; color:#6b7280; font-size:12px;">Le montant du prêt dépend des revenus et de la composition du foyer.</div>
+      </div>
+    `;
+  }
+
+  function loadLocalCSV() {
     return new Promise((resolve, reject) => {
       Papa.parse('./ptz-zoning.csv', {
         download: true,
@@ -141,111 +214,183 @@
         delimiter: ';',
         skipEmptyLines: true,
         complete: (results) => {
+          const zoneKey = results.meta.fields.find(k => k.toLowerCase().includes('zonage'));
           results.data.forEach(row => {
-            const code = row['CODGEO'];
-            let zone = row['Zonage ABC en vigueur depuis le 26 juin 2026'];
-            if (!zone) {
-              const zoneKey = Object.keys(row).find(k => k.toLowerCase().includes('zonage'));
-              if (zoneKey) zone = row[zoneKey];
-            }
-
+            const code = row.CODGEO;
+            const zone = row[zoneKey];
             if (code && zone) {
               dynamicZones.set(String(code).trim().padStart(5, '0'), String(zone).trim().toUpperCase());
             }
           });
           resolve();
         },
-        error: (err) => reject(new Error('Fichier ptz-zoning.csv introuvable à la racine.'))
+        error: () => reject(new Error('Fichier ptz-zoning.csv introuvable à la racine.'))
       });
     });
   }
 
-  // 2. Récupération des 10 départements du Grand Est
-  async function init() {
-    const status = document.getElementById('status');
-    // Les 10 départements officiels de la région Grand Est
-    const grandEstDeps = ['08', '10', '51', '52', '54', '55', '57', '67', '68', '88'];
+  async function fetchJSON(url) {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`${url} : ${res.status}`);
+    return res.json();
+  }
 
+  async function loadRegionsIndex() {
+    const [regions, departements] = await Promise.all([
+      fetchJSON(`${GEO_API}/regions?fields=nom,code`),
+      fetchJSON(`${GEO_API}/departements?fields=code,codeRegion`)
+    ]);
+
+    regionNames = new Map(regions.map(r => [r.code, r.nom]));
+    departementsByRegion = new Map();
+    departements.forEach(d => {
+      if (!departementsByRegion.has(d.codeRegion)) departementsByRegion.set(d.codeRegion, []);
+      departementsByRegion.get(d.codeRegion).push(d.code);
+    });
+
+    [...regions]
+      .sort((a, b) => a.nom.localeCompare(b.nom, 'fr'))
+      .forEach(r => regionSelect.add(new Option(r.nom, r.code)));
+    regionSelect.disabled = false;
+  }
+
+  async function loadRegionOutlines() {
     try {
-      await loadLocalCSV();
-      status.innerText = `${dynamicZones.size} communes synchronisées. Téléchargement des tracés du Grand Est...`;
-
-      // Requêtes en parallèle sur les 10 départements
-      const requests = grandEstDeps.map(dep =>
-        fetch(`https://geo.api.gouv.fr/departements/${dep}/communes?format=geojson&geometry=contour`)
-          .then(res => {
-            if (!res.ok) throw new Error(`Erreur dép ${dep}: ${res.status}`);
-            return res.json();
-          })
-      );
-
-      const allDepartmentsGeo = await Promise.all(requests);
-
-      status.innerText = 'Tracé des 5 100 communes sur la carte...';
-
-      allDepartmentsGeo.forEach(geojson => {
-        L.geoJSON(geojson, {
-          style: (feature) => {
-            const insee = feature.properties.code;
-            const zone = dynamicZones.get(insee) || 'C';
-            return getStyle(zone);
-          },
-          onEachFeature: (feature, layer) => {
-            const insee = feature.properties.code;
-            const nom = feature.properties.nom;
-            const zone = dynamicZones.get(insee) || 'C';
-
-            let desc = '';
-            if (zone === 'B2') {
-              desc = '<b style="color:#d97706;">Éligible PTZ ancien (Zone B2)</b><br>Plafond pour vous : 66 000 €';
-            } else if (zone === 'C') {
-              desc = '<b style="color:#059669;">Éligible PTZ ancien (Zone C)</b><br>Plafond pour vous : 60 000 €';
-            } else {
-              desc = '<b style="color:#dc2626;">Inéligible PTZ ancien (Zone tendue ' + zone + ')</b>';
-            }
-
-            layer.bindPopup(`
-              <div style="font-size:13px;">
-                <h3 style="margin:0 0 4px 0; font-size:15px;">${nom}</h3>
-                <div>Code INSEE : <b>${insee}</b></div>
-                <div>Zone PTZ : <b>${zone}</b></div>
-                <div style="margin-top:6px;">${desc}</div>
-              </div>
-            `);
-
-            layer.on({
-              mouseover: (e) => {
-                e.target.setStyle({ weight: 3, color: '#000', fillOpacity: 0.75 });
-                e.target.bringToFront();
-              },
-              mouseout: (e) => {
-                const z = dynamicZones.get(feature.properties.code) || 'C';
-                e.target.setStyle(getStyle(z));
-              }
-            });
-          }
-        }).addTo(map);
-      });
-
-      status.style.display = 'none';
-
+      const geojson = await fetchJSON(REGIONS_OUTLINE_URL);
+      outlinesLayer = L.geoJSON(geojson, {
+        pane: 'regions',
+        style: outlineStyle,
+        onEachFeature: (feature, layer) => {
+          layer.bindTooltip(feature.properties.nom, { permanent: true, direction: 'center', className: 'region-label' });
+          layer.on({
+            click: () => selectRegion(feature.properties.code),
+            mouseover: (e) => {
+              if (feature.properties.code !== activeRegion) e.target.setStyle({ fillOpacity: 0.2 });
+            },
+            mouseout: (e) => e.target.setStyle(outlineStyle(feature))
+          });
+        }
+      }).addTo(map);
+      toggleRegionLabels();
     } catch (err) {
       console.error(err);
-      status.innerText = `Erreur : ${err.message}`;
-      status.style.background = '#fee2e2';
-      status.style.color = '#b91c1c';
     }
   }
 
-  // Légende
+  function toggleRegionLabels() {
+    if (!outlinesLayer) return;
+    const show = map.getZoom() <= 7;
+    outlinesLayer.eachLayer(layer => {
+      const tooltip = layer.getTooltip();
+      if (tooltip) tooltip.setOpacity(show ? 1 : 0);
+    });
+  }
+
+  async function fetchRegionCommunes(regionCode, token) {
+    if (regionCache.has(regionCode)) return regionCache.get(regionCode);
+
+    const deps = departementsByRegion.get(regionCode) || [];
+    let done = 0;
+    const report = () => {
+      if (token === loadToken) setStatus(`Téléchargement des tracés : ${done}/${deps.length} départements...`);
+    };
+    report();
+
+    const collections = await Promise.all(deps.map(dep =>
+      fetchJSON(`${GEO_API}/departements/${dep}/communes?format=geojson&geometry=contour`).then(geojson => {
+        done++;
+        report();
+        return geojson;
+      })
+    ));
+
+    const merged = { type: 'FeatureCollection', features: collections.flatMap(c => c.features) };
+    regionCache.set(regionCode, merged);
+    return merged;
+  }
+
+  function renderCommunes(geojson) {
+    if (communesLayer) map.removeLayer(communesLayer);
+
+    communesLayer = L.geoJSON(geojson, {
+      style: (feature) => getStyle(zoneOf(feature.properties.code)),
+      onEachFeature: (feature, layer) => {
+        const insee = feature.properties.code;
+        layer.bindPopup(popupContent(feature.properties.nom, insee, zoneOf(insee)));
+        layer.on({
+          mouseover: (e) => {
+            e.target.setStyle({ weight: 3, color: '#000', fillOpacity: 0.75 });
+            e.target.bringToFront();
+          },
+          mouseout: (e) => e.target.setStyle(getStyle(zoneOf(insee)))
+        });
+      }
+    }).addTo(map);
+
+    map.fitBounds(communesLayer.getBounds(), { padding: [20, 20] });
+  }
+
+  async function selectRegion(regionCode) {
+    if (!regionNames.has(regionCode)) return;
+
+    const token = ++loadToken;
+    activeRegion = regionCode;
+    regionSelect.value = regionCode;
+    history.replaceState(null, '', `#region=${regionCode}`);
+    if (outlinesLayer) outlinesLayer.setStyle(outlineStyle);
+
+    try {
+      const geojson = await fetchRegionCommunes(regionCode, token);
+      if (token !== loadToken) return;
+      setStatus(`Tracé des ${geojson.features.length.toLocaleString('fr-FR')} communes – ${regionNames.get(regionCode)}...`);
+      await new Promise(requestAnimationFrame);
+      renderCommunes(geojson);
+      setStatus('');
+    } catch (err) {
+      if (token !== loadToken) return;
+      console.error(err);
+      setStatus(`Erreur : ${err.message}`, true);
+    }
+  }
+
+  function regionFromHash() {
+    const match = location.hash.match(/region=([0-9A-Za-z]+)/);
+    return match ? match[1] : null;
+  }
+
+  async function init() {
+    try {
+      await loadLocalCSV();
+      setStatus(`${dynamicZones.size.toLocaleString('fr-FR')} communes synchronisées. Chargement des régions...`);
+      await loadRegionsIndex();
+      loadRegionOutlines();
+
+      const initialRegion = regionFromHash();
+      if (initialRegion && regionNames.has(initialRegion)) {
+        selectRegion(initialRegion);
+      } else {
+        setStatus('Choisissez une région dans la liste ou cliquez sur la carte.');
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus(`Erreur : ${err.message}`, true);
+    }
+  }
+
+  regionSelect.addEventListener('change', () => {
+    if (regionSelect.value) selectRegion(regionSelect.value);
+  });
+
+  map.on('zoomend', toggleRegionLabels);
+
   const legend = L.control({ position: 'bottomright' });
   legend.onAdd = function () {
     const div = L.DomUtil.create('div', 'legend');
     div.innerHTML = `
       <b>Légende PTZ (26 juin 2026)</b><br>
-      <i style="background: #ef4444"></i> Zone B1 / A (Neuf uniquement)<br>
-      <i style="background: #f59e0b"></i> Zone B2 (Neuf & Ancien rénové)<br>
-      <i style="background: #10b981"></i> Zone C (Neuf & Ancien rénové)
+      <i style="background: #ef4444"></i> Zone A bis / A / B1 (Neuf uniquement)<br>
+      <i style="background: #f59e0b"></i> Zone B2 (Neuf & Ancien avec travaux)<br>
+      <i style="background: #10b981"></i> Zone C (Neuf & Ancien avec travaux)
     `;
     return div;
   };
