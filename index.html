@@ -2,28 +2,80 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Carte PTZ - Région Grand Est (Zonage ABC en vigueur depuis le 26 juin 2026)</title>
+  <title>Carte PTZ Grand Est | Zonage ABC en vigueur depuis le 26 juin 2026</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Carte PTZ - Région Grand Est - Zonage ABC en vigueur depuis le 26 juin 2026">
-  <meta property="og:title" content="Carte PTZ - Région Grand Est (Zonage ABC en vigueur depuis le 26 juin 2026)">
-  <meta property="og:description" content="Carte PTZ - Région Grand Est - Zonage ABC en vigueur depuis le 26 juin 2026">
+  <meta name="description" content="Carte interactive officielle du Zonage ABC (PTZ - Prêt à Taux Zéro) pour la Région Grand Est. Données officielles du Zonage ABC en vigueur depuis le 26 juin 2026. Vérifiez l'éligibilité et plafonds par commune.">
+  <meta name="keywords" content="Zonage ABC en vigueur depuis le 26 juin 2026, PTZ Grand Est, Carte PTZ Grand Est, Prêt à Taux Zéro 2026, communes éligibles PTZ, zone B1, zone B2, zone C, simulateur PTZ">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#10b981">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:title" content="Carte PTZ Grand Est | Zonage ABC en vigueur depuis le 26 juin 2026">
+  <meta property="og:description" content="Vérifiez l'éligibilité au PTZ (Prêt à Taux Zéro) pour les ~5 100 communes du Grand Est selon le Zonage ABC officiel en vigueur depuis le 26 juin 2026.">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Carte PTZ Grand Est | Zonage ABC en vigueur depuis le 26 juin 2026">
+  <meta name="twitter:description" content="Carte interactive du Zonage ABC en vigueur depuis le 26 juin 2026 (Prêt à Taux Zéro) en région Grand Est.">
+
+  <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
+
+  <!-- Schema.org Structured Data for Google -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Carte PTZ - Zonage ABC Région Grand Est",
+    "headline": "Zonage ABC en vigueur depuis le 26 juin 2026",
+    "description": "Carte interactive officielle du Zonage ABC en vigueur depuis le 26 juin 2026 pour le Prêt à Taux Zéro (PTZ) dans les 10 départements de la Région Grand Est.",
+    "applicationCategory": "RealEstateApplication",
+    "operatingSystem": "All",
+    "inLanguage": "fr-FR",
+    "spatialCoverage": {
+      "@type": "AdministrativeArea",
+      "name": "Grand Est",
+      "addressCountry": "FR"
+    }
+  }
+  </script>
+
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     #map { height: 100vh; width: 100vw; background: #e5e7eb; }
-    #status {
+    #app-header {
       position: absolute;
       top: 15px;
       left: 60px;
       z-index: 1000;
       background: white;
-      padding: 10px 16px;
+      padding: 12px 18px;
       border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      font-size: 13px;
-      font-weight: 600;
       color: #1f2937;
+      max-width: 380px;
+    }
+    #app-header h1 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 700;
+      color: #111827;
+      line-height: 1.3;
+    }
+    #app-header .subtitle {
+      margin: 4px 0 0 0;
+      font-size: 12px;
+      color: #4b5563;
+      line-height: 1.4;
+    }
+    #status {
+      margin-top: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #2563eb;
     }
     .legend {
       background: white;
@@ -45,7 +97,11 @@
 </head>
 <body>
 
-<div id="status">Chargement du fichier ptz-zoning.csv...</div>
+<header id="app-header">
+  <h1>Carte PTZ – Région Grand Est</h1>
+  <p class="subtitle">Zonage ABC en vigueur depuis le 26 juin 2026</p>
+  <div id="status">Chargement du fichier ptz-zoning.csv...</div>
+</header>
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
