@@ -36,10 +36,11 @@ This web application allows users to quickly check PTZ eligibility for ~5,100 mu
 
 ```text
 .
-├── .gitignore   # Git ignore rules
-├── index.html   # Main application interface (HTML / CSS / JavaScript)
+├── .gitignore       # Git ignore rules
+├── favicon.ico      # Website favicon icon
+├── index.html       # Main application interface (HTML / CSS / JavaScript)
 ├── ptz-zoning.csv   # ABC zoning dataset by INSEE commune code
-└── README.md    # Project documentation
+└── README.md        # Project documentation
 ```
 
 ## 🛠️ Setup & Usage
