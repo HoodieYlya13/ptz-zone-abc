@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Carte PTZ - Région Grand Est</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    #map { height: 100vh; width: 100vw; background: #e5e7eb; }
+    #status {
+      position: absolute;
+      top: 15px;
+      left: 60px;
+      z-index: 1000;
+      background: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-size: 13px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+    .legend {
+      background: white;
+      padding: 12px 16px;
+      line-height: 22px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      border-radius: 8px;
+      font-size: 13px;
+    }
+    .legend i {
+      width: 14px;
+      height: 14px;
+      float: left;
+      margin-right: 8px;
+      margin-top: 4px;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="status">Chargement du fichier ptz-zoning.csv...</div>
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+<script>
+  // Vue cadrée sur le Grand Est
+  const map = L.map('map').setView([48.6, 6.2], 8);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+
+  const dynamicZones = new Map();
+
+  const getStyle = (zone) => {
+    let color = '#10b981'; // Vert = C
+    if (zone === 'B1' || zone === 'A' || zone === 'ABIS') color = '#ef4444'; // Rouge = Inéligible
+    else if (zone === 'B2') color = '#f59e0b'; // Jaune = B2
+
+    return {
+      fillColor: color,
+      weight: 1,
+      opacity: 0.85,
+      color: '#4b5563',
+      fillOpacity: 0.55
+    };
+  };
+
+  // 1. Lecture du zonage officiel en mémoire
+  async function loadLocalCSV() {
+    return new Promise((resolve, reject) => {
+      Papa.parse('./ptz-zoning.csv', {
+        download: true,
+        header: true,
+        delimiter: ';',
+        skipEmptyLines: true,
+        complete: (results) => {
+          results.data.forEach(row => {
+            const code = row['CODGEO'];
+            let zone = row['Zonage ABC en vigueur depuis le 26 juin 2026'];
+            if (!zone) {
+              const zoneKey = Object.keys(row).find(k => k.toLowerCase().includes('zonage'));
+              if (zoneKey) zone = row[zoneKey];
+            }
+
+            if (code && zone) {
+              dynamicZones.set(String(code).trim().padStart(5, '0'), String(zone).trim().toUpperCase());
+            }
+          });
+          resolve();
+        },
+        error: (err) => reject(new Error('Fichier ptz-zoning.csv introuvable à la racine.'))
+      });
+    });
+  }
+
+  // 2. Récupération des 10 départements du Grand Est
+  async function init() {
+    const status = document.getElementById('status');
+    // Les 10 départements officiels de la région Grand Est
+    const grandEstDeps = ['08', '10', '51', '52', '54', '55', '57', '67', '68', '88'];
+
+    try {
+      await loadLocalCSV();
+      status.innerText = `${dynamicZones.size} communes synchronisées. Téléchargement des tracés du Grand Est...`;
+
+      // Requêtes en parallèle sur les 10 départements
+      const requests = grandEstDeps.map(dep =>
+        fetch(`https://geo.api.gouv.fr/departements/${dep}/communes?format=geojson&geometry=contour`)
+          .then(res => {
+            if (!res.ok) throw new Error(`Erreur dép ${dep}: ${res.status}`);
+            return res.json();
+          })
+      );
+
+      const allDepartmentsGeo = await Promise.all(requests);
+
+      status.innerText = 'Tracé des 5 100 communes sur la carte...';
+
+      allDepartmentsGeo.forEach(geojson => {
+        L.geoJSON(geojson, {
+          style: (feature) => {
+            const insee = feature.properties.code;
+            const zone = dynamicZones.get(insee) || 'C';
+            return getStyle(zone);
+          },
+          onEachFeature: (feature, layer) => {
+            const insee = feature.properties.code;
+            const nom = feature.properties.nom;
+            const zone = dynamicZones.get(insee) || 'C';
+
+            let desc = '';
+            if (zone === 'B2') {
+              desc = '<b style="color:#d97706;">Éligible PTZ ancien (Zone B2)</b><br>Plafond pour vous : 66 000 €';
+            } else if (zone === 'C') {
+              desc = '<b style="color:#059669;">Éligible PTZ ancien (Zone C)</b><br>Plafond pour vous : 60 000 €';
+            } else {
+              desc = '<b style="color:#dc2626;">Inéligible PTZ ancien (Zone tendue ' + zone + ')</b>';
+            }
+
+            layer.bindPopup(`
+              <div style="font-size:13px;">
+                <h3 style="margin:0 0 4px 0; font-size:15px;">${nom}</h3>
+                <div>Code INSEE : <b>${insee}</b></div>
+                <div>Zone PTZ : <b>${zone}</b></div>
+                <div style="margin-top:6px;">${desc}</div>
+              </div>
+            `);
+
+            layer.on({
+              mouseover: (e) => {
+                e.target.setStyle({ weight: 3, color: '#000', fillOpacity: 0.75 });
+                e.target.bringToFront();
+              },
+              mouseout: (e) => {
+                const z = dynamicZones.get(feature.properties.code) || 'C';
+                e.target.setStyle(getStyle(z));
+              }
+            });
+          }
+        }).addTo(map);
+      });
+
+      status.style.display = 'none';
+
+    } catch (err) {
+      console.error(err);
+      status.innerText = `Erreur : ${err.message}`;
+      status.style.background = '#fee2e2';
+      status.style.color = '#b91c1c';
+    }
+  }
+
+  // Légende
+  const legend = L.control({ position: 'bottomright' });
+  legend.onAdd = function () {
+    const div = L.DomUtil.create('div', 'legend');
+    div.innerHTML = `
+      <b>Légende PTZ (26 juin 2026)</b><br>
+      <i style="background: #ef4444"></i> Zone B1 / A (Neuf uniquement)<br>
+      <i style="background: #f59e0b"></i> Zone B2 (Neuf & Ancien rénové)<br>
+      <i style="background: #10b981"></i> Zone C (Neuf & Ancien rénové)
+    `;
+    return div;
+  };
+  legend.addTo(map);
+
+  init();
+</script>
+
+</body>
+</html>
